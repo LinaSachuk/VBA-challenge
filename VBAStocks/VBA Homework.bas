@@ -1,12 +1,11 @@
-Attribute VB_Name = "Module1"
 Sub StocksRealData()
     
 Dim ws As Worksheet
 Dim WorksheetName As String
 Dim Ticker_Name As String
 
-Total_Stock_Volume = 0
 
+Total_Stock_Volume = 0
 
 For Each ws In Worksheets
     
@@ -30,12 +29,7 @@ For Each ws In Worksheets
 
     For i = 2 To LastRow
         
-         If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
-                
-                'Debug.Print ws.Name
-                'Debug.Print RowCounter
-                'Debug.Print i
-                
+         If ws.Cells(i, 1).Value <> ws.Cells(i + 1, 1).Value Then
                 
                  'clear the data
                 ws.Range("I" & Summary_Table_Row).Value = ""
@@ -44,16 +38,14 @@ For Each ws In Worksheets
                 ws.Range("L" & Summary_Table_Row).Value = ""
                 
                 Ticker_Name = ws.Cells(i, 1).Value
-                'Debug.Print Ticker_Name
                 
                  ws.Range("I" & Summary_Table_Row).Value = Ticker_Name
                  
                 FirstRowForTicker = i - RowCounter
-                'Debug.Print FirstRowForTicker
                
                 
                 Yearly_Changes = Round(ws.Cells(i, 6).Value - ws.Cells(FirstRowForTicker, 3).Value, 2)
-                'Debug.Print Yearly_Changes
+                
                 ws.Range("J" & Summary_Table_Row).Value = Yearly_Changes ' /// close - open
                 
                 
@@ -72,23 +64,23 @@ For Each ws In Worksheets
                 If ws.Cells(FirstRowForTicker, 3).Value = 0 Then
                     Percent_Change = 0
                 Else
-                    Percent_Change = Round(Yearly_Changes / ws.Cells(FirstRowForTicker, 3).Value, 2)
+                    Percent_Change = Round(Yearly_Changes / ws.Cells(FirstRowForTicker, 3).Value, 4)
                 End If
                 
-                'Debug.Print Percent_Change
+                
                 ws.Range("K" & Summary_Table_Row).Value = Percent_Change  '/// year_change / open * 100
-                ws.Range("K" & Summary_Table_Row).Style = "Percent"
+                ws.Range("K" & Summary_Table_Row).NumberFormat = "0.00%"
                 
                 
-                ws.Range("L" & Summary_Table_Row).Value = Total_Stock_Volume '/// Sum(vol)
-                'Debug.Print Total_Stock_Volume
                 
-         
-                Total_Stock_Volume = 0
+                ws.Range("L" & Summary_Table_Row).Value = Total_Stock_Volume + ws.Cells(i, 7).Value   '/// Sum(vol) + last row
+                
                 
                 RowCounter = 0
                 
                 Summary_Table_Row = Summary_Table_Row + 1
+                
+                Total_Stock_Volume = 0
             
          Else
          
@@ -103,7 +95,6 @@ For Each ws In Worksheets
     Next i
 
 
-    Debug.Print ws.Name
     
     ws.Range("K" & Summary_Table_Row).Style = "Percent"
     MaxIncrease = 0
@@ -125,7 +116,7 @@ For Each ws In Worksheets
                 
                 TickerD = ws.Range("I" & j).Value
                 MaxDecrease = ws.Range("K" & j).Value
-                'Debug.Print MaxDecrease
+               
            
            End If
            
@@ -143,18 +134,16 @@ For Each ws In Worksheets
   
     ws.Range("P2").Value = Ticker
     ws.Range("Q2").Value = MaxIncrease
-    ws.Range("Q2").Style = "Percent"
+    ws.Range("Q2").NumberFormat = "0.00%"
     
     ws.Range("P3").Value = TickerD
     ws.Range("Q3").Value = MaxDecrease
-    ws.Range("Q3").Style = "Percent"
+    ws.Range("Q3").NumberFormat = "0.00%"
     
     ws.Range("P4").Value = TickerV
     ws.Range("Q4").Value = MaxTotalVolume
     
 Next ws
-
-
 
 
 
